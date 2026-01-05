@@ -13,11 +13,9 @@ module EasyBroker
       return enum_for(:each) unless block_given?
 
       page = 1
-
       loop do
         data = @client.get(PATH, params: { page: page, limit: @limit })
         content = Array(data["content"])
-
         break if content.empty?
 
         content.each { |property| yield property }
@@ -26,7 +24,7 @@ module EasyBroker
     end
 
     def titles
-      each.map { |p| p["title"] }.compact
+      each.lazy.map { |p| p["title"] }.select { |t| t && !t.empty? }.to_a
     end
   end
 end
